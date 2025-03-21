@@ -1,0 +1,89 @@
+---
+# tasks file for grafana_postgres
+- name: Install required Python packages for PostgreSQL
+  apt:
+    name: python3-psycopg2
+    state: present
+  become: yes
+
+- name: Install PostgreSQL
+  become: yes
+  apt:
+    name: 
+      - postgresql
+      - postgresql-contrib
+    state: present
+    update_cache: yes
+
+- name: Ensure PostgreSQL service is running
+  become: yes
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create PostgreSQL database for Grafana
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: "{{ db_name }}"
+    state: present
+
+- name: Create PostgreSQL user for Grafana
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    db: "{{ db_name }}"
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    priv: "ALL"
+    state: present
+
+- name: Configure PostgreSQL to listen on all interfaces
+  become: yes
+  lineinfile:
+    path: /etc/postgresql/{{ postgres_version }}/main/postgresql.conf
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  notify: Restart PostgreSQL
+
+- name: Allow Grafana to connect to PostgreSQL
+  become: yes
+  lineinfile:
+    path: /etc/postgresql/{{ postgres_version }}/main/pg_hba.conf
+    line: "host    {{ db_name }}    {{ db_user }}    127.0.0.1/32    md5"
+  notify: Restart PostgreSQL
+
+- name: Add Grafana APT repository key
+  become: yes
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Add Grafana APT repository
+  become: yes
+  apt_repository:
+    repo: "deb https://packages.grafana.com/oss/deb stable main"
+    state: present
+
+- name: Install Grafana
+  become: yes
+  apt:
+    name: grafana
+    state: present
+    update_cache: yes
+
+- name: Ensure Grafana service is running
+  become: yes
+  service:
+    name: grafana-server
+    state: started
+    enabled: yes
+- name: Configure Grafana to use PostgreSQL
+  become: yes
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+  notify: Restart Grafana
+
+

@@ -1,0 +1,10 @@
+---
+# vars file for grafana_postgres
+postgres_version: "14"
+grafana_version: "10.0.0"
+grafana_admin_user: "admin"
+grafana_admin_password: "admin"
+db_name: "grafana"
+db_user: "grafana"
+db_password: "grafana_password"
+

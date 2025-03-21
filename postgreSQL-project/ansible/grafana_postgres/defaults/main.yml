@@ -1,0 +1,12 @@
+---
+# defaults file for grafana_postgres
+grafana_admin_user: "admin"
+grafana_admin_password: "admin"
+grafana_port: 3000
+
+postgres_user: "grafana"
+postgres_password: "grafana_password"
+postgres_db: "grafana_db"
+postgres_host: "localhost"  # Replace with your PostgreSQL host
+postgres_port: 5432
+

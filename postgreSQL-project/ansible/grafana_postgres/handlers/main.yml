@@ -1,0 +1,15 @@
+---
+# handlers file for grafana_postgres
+
+- name: Restart PostgreSQL
+  become: yes
+  service:
+    name: postgresql
+    state: restarted
+
+- name: Restart Grafana
+  become: yes
+  service:
+    name: grafana-server
+    state: restarted
+
