@@ -11,12 +11,12 @@ resource "aws_instance" "bastion" {
 
   provisioner "file" {
     source      = var.key_file_path
-    destination = "/home/ubuntu/CommonKey.pem"
+    destination = "/home/ubuntu/project-psql-key.pem"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 400 /home/ubuntu/CommonKey.pem"
+      "chmod 400 /home/ubuntu/project-psql-key.pem"
     ]
   }
 
